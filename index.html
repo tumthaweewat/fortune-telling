@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ดูดวงเสี่ยงเสียมซี - Fortune Telling</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #718096;
+            margin-bottom: 2rem;
+        }
+
+        .fortune-card {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+
+        .fortune-card.show {
+            transform: scale(1);
+        }
+
+        .fortune-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .fortune-text {
+            font-size: 1.3rem;
+            color: #2d3748;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .fortune-detail {
+            font-size: 1rem;
+            color: #4a5568;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .fortune-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            margin: 1rem 0;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 500;
+        }
+
+        .fortune-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .fortune-btn:active {
+            transform: translateY(0);
+        }
+
+        .fortune-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-section {
+            margin: 2rem 0;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .stars {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            color: #ffd700;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .zodiac-icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            opacity: 0.6;
+        }
+
+        .zodiac-icons span {
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <h1 class="title">🔮 ดูดวงเสี่ยงเสียมซี</h1>
+        <p class="subtitle">เสี่ยงโชคลาภ ดวงชะตา</p>
+        
+        <div class="zodiac-icons">
+            <span style="animation-delay: 0s;">♈</span>
+            <span style="animation-delay: 0.2s;">♉</span>
+            <span style="animation-delay: 0.4s;">♊</span>
+            <span style="animation-delay: 0.6s;">♋</span>
+            <span style="animation-delay: 0.8s;">♌</span>
+            <span style="animation-delay: 1s;">♍</span>
+            <span style="animation-delay: 1.2s;">♎</span>
+            <span style="animation-delay: 1.4s;">♏</span>
+            <span style="animation-delay: 1.6s;">♐</span>
+            <span style="animation-delay: 1.8s;">♑</span>
+            <span style="animation-delay: 2s;">♒</span>
+            <span style="animation-delay: 2.2s;">♓</span>
+        </div>
+
+        <div class="input-section">
+            <input type="text" class="name-input" id="nameInput" placeholder="กรอกชื่อของคุณ..." maxlength="30">
+        </div>
+
+        <button class="fortune-btn" id="fortuneBtn" onclick="getFortune()">
+            🎲 ดูดวงเสี่ยงเสียมซี
+        </button>
+
+        <div class="fortune-card hidden" id="fortuneCard">
+            <div class="fortune-icon" id="fortuneIcon">🌟</div>
+            <div class="fortune-text" id="fortuneText"></div>
+            <div class="fortune-detail" id="fortuneDetail"></div>
+        </div>
+
+        <button class="fortune-btn hidden" id="newFortuneBtn" onclick="newFortune()">
+            🔄 ดูดวงใหม่
+        </button>
+    </div>
+
+    <script>
+        const fortunes = [
+            {
+                icon: "🌟",
+                text: "ดวงดาวส่องแสง โชคลาภมาเยือน",
+                detail: "วันนี้เป็นวันที่โชคดีของคุณ การงานเรียบร้อย เงินทองไหลมาเทมา ควรเสี่ยงโชคในสิ่งที่คิดไว้"
+            },
+            {
+                icon: "🍀",
+                text: "ใบโบตุ๋นเขียวใส นำโชคมาให้",
+                detail: "ความรักราบรื่น ครอบครัวอบอุ่น ควรทำงานหนักในช่วงนี้ ผลลัพธ์จะดีเกินคาด"
+            },
+            {
+                icon: "💎",
+                text: "เพชรนิลจินดา ทรัพย์สมบัติงาม",
+                detail: "การเงินมั่นคง มีโอกาสได้รับมรดกหรือของขวัญมีค่า ลงทุนในช่วงนี้จะได้กำไร"
+            },
+            {
+                icon: "🌸",
+                text: "ดอกไม้ผลิบาน ความสุขเบิกบาน",
+                detail: "ความรักกำลังจะมาถึง หากมีคนรักแล้วจะได้ข่าวดี สุขภาพแข็งแรง จิตใจสดใส"
+            },
+            {
+                icon: "🐉",
+                text: "มังกรทองคำ เกียรติยศนาม",
+                detail: "ตำแหน่งหน้าที่การงานจะก้าวหน้า ได้รับการยกย่องจากผู้คน ชื่อเสียงโด่งดัง"
+            },
+            {
+                icon: "🌙",
+                text: "พระจันทร์เพ็ญ ดวงใจเย็น",
+                detail: "ควรใช้สติปัญญาในการตัดสินใจ อย่าเร่งรีบ ช่วงนี้เหมาะกับการวางแผนระยะยาว"
+            },
+            {
+                icon: "🏆",
+                text: "ถ้วยรางวัลทอง ชัยชนะกิตติคุณ",
+                detail: "ความสำเร็จใกล้ตัว โครงการที่ทำอยู่จะสำเร็จลุล่วง ควรมุ่งมั่นทำงานต่อไป"
+            },
+            {
+                icon: "🦅",
+                text: "นกอินทรีทอง บินสูงเสียงดัง",
+                detail: "มีโอกาสเดินทางไกล หรือได้รับข่าวดีจากต่างแดน อาชีพการงานจะขยายตัว"
+            },
+            {
+                icon: "🌈",
+                text: "รุ้งสีเจ็ดสี หลังฝนใส",
+                detail: "ปัญหาที่ผ่านมาจะคลี่คลาย มีความสุขหลังความทุกข์ ครอบครัวมีความสุข"
+            },
+            {
+                icon: "⚡",
+                text: "ฟ้าผ่าส่องแสง พลังแกว่งแกง",
+                detail: "พลังงานสูง เหมาะกับการเริ่มต้นใหม่ แต่ควรระวังการใช้คำพูด อาจมีความเข้าใจผิด"
+            }
+        ];
+
+        const luckyNumbers = [7, 9, 13, 21, 28, 35, 42, 49, 56, 63, 77, 88, 99];
+        const colors = ["แดง", "เหลือง", "เขียว", "น้ำเงิน", "ม่วง", "ชมพู", "ทอง", "เงิน"];
+        const directions = ["ทิศเหนือ", "ทิศใต้", "ทิศตะวันออก", "ทิศตะวันตก", "ทิศตะวันออกเฉียงเหนือ", "ทิศตะวันออกเฉียงใต้", "ทิศตะวันตกเฉียงเหนือ", "ทิศตะวันตกเฉียงใต้"];
+
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 20; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.innerHTML = '✨';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function getFortune() {
+            const nameInput = document.getElementById('nameInput');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                alert('กรุณากรอกชื่อของคุณก่อนดูดวง');
+                nameInput.focus();
+                return;
+            }
+
+            const fortuneBtn = document.getElementById('fortuneBtn');
+            const fortuneCard = document.getElementById('fortuneCard');
+            
+            fortuneBtn.disabled = true;
+            fortuneBtn.innerHTML = '🔮 กำลังดูดวง...';
+            fortuneBtn.classList.add('loading');
+
+            setTimeout(() => {
+                const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+                const luckyNumber = luckyNumbers[Math.floor(Math.random() * luckyNumbers.length)];
+                const luckyColor = colors[Math.floor(Math.random() * colors.length)];
+                const luckyDirection = directions[Math.floor(Math.random() * directions.length)];
+
+                document.getElementById('fortuneIcon').textContent = fortune.icon;
+                document.getElementById('fortuneText').textContent = `${name}: ${fortune.text}`;
+                document.getElementById('fortuneDetail').innerHTML = `
+                    ${fortune.detail}<br><br>
+                    <strong>เลขมงคล:</strong> ${luckyNumber}<br>
+                    <strong>สีมงคล:</strong> ${luckyColor}<br>
+                    <strong>ทิศมงคล:</strong> ${luckyDirection}
+                `;
+
+                fortuneCard.classList.remove('hidden');
+                fortuneCard.classList.add('show');
+                document.getElementById('newFortuneBtn').classList.remove('hidden');
+                
+                fortuneBtn.style.display = 'none';
+            }, 2000);
+        }
+
+        function newFortune() {
+            const fortuneCard = document.getElementById('fortuneCard');
+            const fortuneBtn = document.getElementById('fortuneBtn');
+            const newFortuneBtn = document.getElementById('newFortuneBtn');
+            const nameInput = document.getElementById('nameInput');
+
+            fortuneCard.classList.remove('show');
+            fortuneCard.classList.add('hidden');
+            newFortuneBtn.classList.add('hidden');
+            
+            fortuneBtn.style.display = 'inline-block';
+            fortuneBtn.disabled = false;
+            fortuneBtn.innerHTML = '🎲 ดูดวงเสี่ยงเสียมซี';
+            fortuneBtn.classList.remove('loading');
+            
+            nameInput.value = '';
+            nameInput.focus();
+        }
+
+        // เพิ่ม Enter key support
+        document.getElementById('nameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getFortune();
+            }
+        });
+
+        // สร้างดาวเมื่อโหลดหน้า
+        createStars();
+
+        // Auto focus on name input
+        document.getElementById('nameInput').focus();
+    </script>
+</body>
+</html>
